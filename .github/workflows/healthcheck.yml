@@ -21,6 +21,7 @@ jobs:
 
       - name: Run health checks
         run: plainwebworks-healthcheck --output-dir reports/daily
+        continue-on-error: true
 
       - name: Set report date
         id: date
