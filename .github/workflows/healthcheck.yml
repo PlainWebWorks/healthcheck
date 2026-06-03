@@ -1,0 +1,39 @@
+name: Daily Health Check
+
+on:
+  schedule:
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -e .
+
+      - name: Run health checks
+        run: plainwebworks-healthcheck --output-dir reports/daily
+
+      - name: Set report date
+        id: date
+        run: echo "today=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Send report email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: owner@plainwebworks.co
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "Plain Web Works — Site Health Report ${{ steps.date.outputs.today }}"
+          to: owner@plainwebworks.co
+          from: Plain Web Works <owner@plainwebworks.co>
+          html_body: file://reports/daily/${{ steps.date.outputs.today }}.html
