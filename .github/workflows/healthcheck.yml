@@ -17,10 +17,10 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -e .
+        run: pip install requests pyyaml beautifulsoup4
 
       - name: Run health checks
-        run: plainwebworks-healthcheck --output-dir reports/daily
+        run: python cli.py --output-dir reports/daily
         continue-on-error: true
 
       - name: Set report date
