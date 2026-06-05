@@ -20,7 +20,9 @@ jobs:
         run: pip install requests pyyaml beautifulsoup4
 
       - name: Write clients config
-        run: echo "${{ secrets.CLIENTS_YML }}" > clients.yml
+        env:
+          CLIENTS_YML: ${{ secrets.CLIENTS_YML }}
+        run: printf '%s' "$CLIENTS_YML" > clients.yml
 
       - name: Run health checks
         run: python cli.py --output-dir reports/daily
